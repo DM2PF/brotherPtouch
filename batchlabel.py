@@ -1,6 +1,7 @@
 import os
 import argparse
 import csv
+import ptprint
 
 trenner64 = 'inline:data:image/pbm;base64,UDQKNjQgMQqAAAAAAAAAAQo='
 
@@ -46,6 +47,8 @@ parser.add_argument('-i', '--input-csv', action='store', default='input.csv',
 	help='File name of the .csv file with the label data. Needs to have 3 columns. Default: input.csv')
 parser.add_argument('-s', '--size', action='store', default='3',
 	help='Length of the label. 1 fits for ESD boxes No. 1. 2 and 3 for Boxes No. 2 and 3. Default: 3')
+parser.add_argument('-p', '--printfile', action='store_true',
+	help='Generates a .prn file for brother prtiners from the generated bitmap')
 
 args = parser.parse_args()
 
@@ -64,3 +67,9 @@ if i > 1:
 	for j in xrange(2, i):
 		os.system('convert output.pbm "' + trenner64 + '" ' + str(j) + '.pbm -append output.pbm')
 		os.system('rm ' + str(j) + '.pbm')		# aufraeumen
+
+# Generate printfile
+if args.printfile:
+	ptData = ptprint.PtData(open('output.pbm', 'rb').read())
+	ptData.create()
+	open('printfile.prn', 'wb').write(ptData.getData())
